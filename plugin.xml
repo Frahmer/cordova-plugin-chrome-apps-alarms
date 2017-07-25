@@ -28,6 +28,8 @@
 
     <source-file src="src/android/ChromeAlarms.java" target-dir="src/org/chromium" />
     <source-file src="src/android/ChromeAlarmsReceiver.java" target-dir="src/org/chromium" />
+    <source-file src="src/android/ChromeAlarmsRestore.java" target-dir="src/org/chromium" />
+    <source-file src="src/android/ChromeAlarmsRestoreReceiver.java" target-dir="src/org/chromium" />
 
     <config-file target="res/xml/config.xml" parent="/widget">
       <feature name="ChromeAlarms">
@@ -35,8 +37,16 @@
         <param name="onload" value="true" />
       </feature>
     </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <receiver android:name="org.chromium.ChromeAlarmsReceiver" />
+      <receiver android:name="org.chromium.ChromeAlarmsRestoreReceiver" android:exported="false" >
+        <intent-filter>
+          <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+      </receiver>
     </config-file>
   </platform>
 </plugin>

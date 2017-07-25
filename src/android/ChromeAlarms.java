@@ -23,6 +23,7 @@ public class ChromeAlarms extends CordovaPlugin {
     private static BackgroundEventHandler<ChromeAlarms> eventHandler;
 
     private AlarmManager alarmManager;
+    private ChromeAlarmsRestore chromeAlarmsRestore;
 
     public static BackgroundEventHandler<ChromeAlarms> getEventHandler() {
         if (eventHandler == null) {
@@ -54,6 +55,7 @@ public class ChromeAlarms extends CordovaPlugin {
     public void pluginInitialize() {
         getEventHandler().pluginInitialize(this);
         alarmManager = (AlarmManager) cordova.getActivity().getSystemService(Context.ALARM_SERVICE);
+        chromeAlarmsRestore = new ChromeAlarmsRestore(cordova.getActivity());
     }
 
     @Override
@@ -90,6 +92,8 @@ public class ChromeAlarms extends CordovaPlugin {
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel();
         }
+
+        chromeAlarmsRestore.unpersist(name);
     }
 
     private void create(final CordovaArgs args, final CallbackContext callbackContext) {
@@ -104,6 +108,9 @@ public class ChromeAlarms extends CordovaPlugin {
             } else {
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, scheduledTime, periodInMillis, alarmPendingIntent);
             }
+
+            chromeAlarmsRestore.persist(alarmId, String.valueOf(scheduledTime));
+
             callbackContext.success();
         } catch (Exception e) {
             Log.e(LOG_TAG, "Could not create alarm", e);
